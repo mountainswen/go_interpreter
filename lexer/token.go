@@ -28,6 +28,10 @@ const(
 	LET = "LET"
 )
 
+var keyWords = map[string]TokenType{
+	"fn": FUNCTION,
+	"let":LET,
+}
 
 type Token struct {
 	Type TokenType
@@ -36,4 +40,12 @@ type Token struct {
 
 func NewToken(Type TokenType,Value byte) Token {
 	return Token{Type:Type,Value:string(Value)}
+}
+
+func LookIndentType(indent string)TokenType{
+	if tokType,ok := keyWords[indent];ok{
+		return tokType
+	}
+
+	return INDENT
 }
