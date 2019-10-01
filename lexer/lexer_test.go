@@ -39,6 +39,19 @@ func TestNextToken(t *testing.T) {
 
 func TestLexer_NextToken(t *testing.T) {
 	input := `
+
+	10 == 10;
+	10 != 9;
+
+	if (5 < 10){
+		return true;
+	}else{
+		return false;
+	}
+	
+	!-/*5;
+	5<10>5;
+
     let five = 5;
 	let ten = 10;
 	
@@ -54,6 +67,49 @@ func TestLexer_NextToken(t *testing.T) {
 		ExpectedType TokenType
 		ExpectedValue string
 	}{
+		{INT,"10"},
+		{EQ,"=="},
+		{INT,"10"},
+		{SEMICOLON,";"},
+
+		{INT,"10"},
+		{NOT_EQ,"!="},
+		{INT,"9"},
+		{SEMICOLON,";"},
+
+		{IF,"if"},
+		{LPAREN,"("},
+		{INT,"5"},
+		{LT,"<"},
+		{INT,"10"},
+		{RPAREN,")"},
+		{LBRACE,"{"},
+		{RETURN,"return"},
+		{TRUE,"true"},
+		{SEMICOLON,";"},
+		{RBRACE,"}"},
+
+		{ELSE,"else"},
+		{LBRACE,"{"},
+		{RETURN,"return"},
+		{FALSE,"false"},
+		{SEMICOLON,";"},
+		{RBRACE,"}"},
+
+		{BANG,"!"},
+		{MINUS,"-"},
+		{SLASH,"/"},
+		{ASTERISK,"*"},
+		{INT,"5"},
+		{SEMICOLON,";"},
+
+		{INT,"5"},
+		{LT,"<"},
+		{INT,"10"},
+		{GT,">"},
+		{INT,"5"},
+		{SEMICOLON,";"},
+
 		{LET,"let"},
 		{INDENT,"five"},
 		{ASSIGN,"="},

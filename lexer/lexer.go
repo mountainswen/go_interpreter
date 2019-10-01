@@ -33,8 +33,32 @@ func (l *Lexer)NextToken()Token{
 	l.skipSpace()
 
 	switch l.char {
+	case '*':
+		tok = NewToken(ASTERISK,'*')
+	case '!':
+		if l.peekChar() == '='{
+			tok = Token{NOT_EQ,"!="}
+			l.readChar()
+		}else{
+			tok = NewToken(BANG,'!')
+		}
+
+	case '>':
+		tok = NewToken(GT,'>')
+	case '<':
+		tok = NewToken(LT,'<')
+	case '-':
+		tok = NewToken(MINUS,'-')
+	case '/':
+		tok = NewToken(SLASH,'/')
 	case '=':
-		tok =  NewToken(ASSIGN,'=')
+		if l.peekChar() == '='{
+			tok = Token{EQ,"=="}
+			l.readChar()
+		}else{
+			tok =  NewToken(ASSIGN,'=')
+		}
+
 	case ';':
 		tok =  NewToken(SEMICOLON,';')
 	case '(':
@@ -52,6 +76,20 @@ func (l *Lexer)NextToken()Token{
 	case 0:
 		tok.Value = ""
 		tok.Type = EOF
+	case '"':// 字符串
+		tok.Type = STRING
+		tok.Value = l.readString()
+	case '[':
+		tok.Type = LBRACKET
+		tok.Value = "["
+
+	case ']':
+		tok.Type = RBRACKET
+		tok.Value = "]"
+	case ':':
+		tok.Type = COLON
+		tok.Value = ":"
+
 	default:
 		if isLetter(l.char){
 			tok.Value = l.readIdentifier() //这里已经预先读了一个字符，所以需要直接return
@@ -72,6 +110,13 @@ func (l *Lexer)NextToken()Token{
 	return tok
 }
 
+func (l *Lexer)peekChar()byte{
+	if l.readPosition >= len(l.input){
+		return 0
+	}
+
+	return l.input[l.readPosition]
+}
 
 func (l *Lexer)readIdentifier()string{
 	position := l.position
@@ -104,4 +149,17 @@ func isLetter(c byte)bool{
 
 func isDigit(c byte)bool{
 	return c >= '0' && c <= '9'
+}
+
+func (l *Lexer)readString()string{
+	pos := l.position + 1
+
+	for {
+		l.readChar()
+		if l.char == '"'{
+			break
+		}
+	}
+
+	return l.input[pos:l.position]
 }
